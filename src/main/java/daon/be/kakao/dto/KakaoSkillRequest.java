@@ -1,6 +1,7 @@
 package daon.be.kakao.dto;
 
 import java.util.Map;
+import java.util.Objects;
 
 public record KakaoSkillRequest(
         UserRequest userRequest
@@ -13,7 +14,7 @@ public record KakaoSkillRequest(
     }
 
     public record User(
-            Map<String, String> properties
+            String id
     ) {
     }
 }
