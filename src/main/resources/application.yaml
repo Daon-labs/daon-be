@@ -3,4 +3,4 @@ spring:
     name: be
   ai:
     openai:
-      api-key: ${OPENAI_API_KAY}
+      api-key: ${OPENAI_API_KEY}
