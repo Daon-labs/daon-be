@@ -35,7 +35,17 @@ public class AgentChatService {
 
         // Request/Response
         ChatResponse chatResponse = chatModel.call(prompt);
-        String chatResponseText = chatResponse.getResult().getOutput().getText();
+        String chatResponseText = null;
+
+        if (chatResponse != null
+                && chatResponse.getResult() != null
+                && chatResponse.getResult().getOutput() != null) {
+            chatResponseText = chatResponse.getResult().getOutput().getText();
+        }
+        if (chatResponseText == null || chatResponseText.isBlank()) {
+            throw new IllegalStateException("AI 응답 텍스트가 비어 있습니다.");
+        }
+
 
         log.info("AI 응답: {}", chatResponseText);
 
