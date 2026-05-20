@@ -24,6 +24,6 @@ public class AgentChatController {
                 OffsetDateTime.now()
         );
 
-        return agentChatService.chat(agentChatRequest);
+        return agentChatService.chatWithoutPlanning(agentChatRequest);
     }
 }

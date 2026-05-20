@@ -53,7 +53,7 @@ public class KakaoWebhookService {
                 requestedAt
         );
 
-        AgentChatResponse agentResponse = agentChatService.chat(agentRequest);
+        AgentChatResponse agentResponse = agentChatService.chatWithoutPlanning(agentRequest);
 
         if (agentResponse == null || agentResponse.answer() == null || agentResponse.answer().isBlank()) {
             log.error("Empty agent response. externalUserId={}, usermessage={}", externalUserId, message);

@@ -20,7 +20,7 @@ public class AgentChatService {
 
     private final OpenAiChatModel chatModel;
 
-    public AgentChatResponse chat(AgentChatRequest agentChatRequest) {
+    public AgentChatResponse chatWithoutPlanning(AgentChatRequest agentChatRequest) {
 
         // Message
         SystemMessage systemMessage = new SystemMessage("""
@@ -51,4 +51,14 @@ public class AgentChatService {
 
         return new AgentChatResponse(chatResponseText);
     }
+
+    /**
+     * <p>사용자 요청을 AgentChatRequest 형식으로 받음
+     * <p>AgentChatRequest 로 변환된 사용자 요청을 AgentPlanningRequest 으로 변환하여 Planner에게 전달
+     * <p>최종 LLM 응답을 AgentChatResponse 형식으로 반환
+     */
+    public AgentChatResponse chat(AgentChatRequest agentChatRequest){
+        return new AgentChatResponse(null);
+    }
+
 }
