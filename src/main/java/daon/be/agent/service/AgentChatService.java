@@ -2,6 +2,7 @@ package daon.be.agent.service;
 
 import daon.be.agent.dto.AgentChatRequest;
 import daon.be.agent.dto.AgentChatResponse;
+import daon.be.agent.planner.model.AgentPlanningRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.messages.SystemMessage;
@@ -57,7 +58,14 @@ public class AgentChatService {
      * <p>AgentChatRequest 로 변환된 사용자 요청을 AgentPlanningRequest 으로 변환하여 Planner에게 전달
      * <p>최종 LLM 응답을 AgentChatResponse 형식으로 반환
      */
-    public AgentChatResponse chat(AgentChatRequest agentChatRequest){
+    public AgentChatResponse chat(AgentChatRequest chatRequest){
+        AgentPlanningRequest planningRequest = AgentPlanningRequest
+                .builder()
+                .message(chatRequest.message())
+                .userId(chatRequest.userId())
+                .requestedAt(chatRequest.requestedAt())
+                .build();
+
         return new AgentChatResponse(null);
     }
 
