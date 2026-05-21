@@ -16,6 +16,17 @@ public class AgentChatController {
 
     private final AgentChatService agentChatService;
 
+    @PostMapping("/api/agent/chatWithoutPlanning")
+    public AgentChatResponse chatWithoutPlanningRequest(@RequestBody String message){
+        AgentChatRequest agentChatRequest = new AgentChatRequest(
+                "test",
+                message,
+                OffsetDateTime.now()
+        );
+
+        return agentChatService.chatWithoutPlanning(agentChatRequest);
+    }
+
     @PostMapping("/api/agent/chat")
     public AgentChatResponse chatRequest(@RequestBody String message){
         AgentChatRequest agentChatRequest = new AgentChatRequest(
@@ -26,4 +37,5 @@ public class AgentChatController {
 
         return agentChatService.chat(agentChatRequest);
     }
+
 }
