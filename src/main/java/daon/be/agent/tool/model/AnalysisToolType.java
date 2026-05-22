@@ -9,7 +9,7 @@ public enum AnalysisToolType {
     GET_HISTORICAL_PRICE_TREND,     // 일/주/월/년봉, 장기추세
     GET_MARKET_AND_INDUSTRY_CONTENT, // 시장/업종 지수, 업종 분봉/일봉
     GET_EVENT_CANDIDATES,           // VI, 뉴스/공시 제공, 이벤트 후보
-    GET_SUPPLY_DEMAND_CONTENT,      // 외국인/기관/프로그램/투자자 수급
+    GET_SUPPLY_DEMAND_CONTEXT,      // 외국인/기관/프로그램/투자자 수급
     GET_FUNDAMENTAL_CONTEXT,        // 재무비율, 재무제표, 투자의견, 추정실적
     COMPARE_STOCKS                  // 복수 종목 비교
 }
