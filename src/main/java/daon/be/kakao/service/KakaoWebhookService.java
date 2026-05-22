@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 @Slf4j
 @Service
@@ -18,7 +19,7 @@ public class KakaoWebhookService {
     private final AgentChatService agentChatService;
 
     public KakaoSkillResponse handle(KakaoSkillRequest request) {
-        OffsetDateTime requestedAt = OffsetDateTime.now();
+        OffsetDateTime requestedAt = OffsetDateTime.now(ZoneId.of("Asia/Seoul"));
 
         if (request == null
                 || request.userRequest() == null

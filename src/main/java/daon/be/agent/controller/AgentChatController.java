@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class AgentChatController {
         AgentChatRequest agentChatRequest = new AgentChatRequest(
                 "test",
                 message,
-                OffsetDateTime.now()
+                OffsetDateTime.now(ZoneId.of("Asia/Seoul"))
         );
 
         return agentChatService.chatWithoutPlanning(agentChatRequest);
@@ -32,7 +33,7 @@ public class AgentChatController {
         AgentChatRequest agentChatRequest = new AgentChatRequest(
                 "test",
                 message,
-                OffsetDateTime.now()
+                OffsetDateTime.now(ZoneId.of("Asia/Seoul"))
         );
 
         return agentChatService.chat(agentChatRequest);
