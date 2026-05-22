@@ -87,6 +87,12 @@ public class AgentChatService {
         AgentPlan agentPlan = agentPlanner.plan(planningRequest);
 
         log.info("agentPlan:{}", agentPlan);
+
+        // needsClarification == true 라면 사용자에게 clarificationQuestion 을 반환
+        if(agentPlan.needsClarification()){
+            return new AgentChatResponse(agentPlan.clarificationQuestion());
+        }
+
         return new AgentChatResponse(null);
     }
 
