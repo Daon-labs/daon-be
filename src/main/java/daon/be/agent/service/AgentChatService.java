@@ -88,6 +88,11 @@ public class AgentChatService {
 
         log.info("agentPlan:{}", agentPlan);
 
+        // isSupported == false 라면 사용자에게 unsupportedReasons 반환
+        if(!agentPlan.isSupported()){
+            return new AgentChatResponse(agentPlan.unsupportedReason());
+        }
+
         // needsClarification == true 라면 사용자에게 clarificationQuestion 을 반환
         if(agentPlan.needsClarification()){
             return new AgentChatResponse(agentPlan.clarificationQuestion());
