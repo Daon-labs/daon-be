@@ -1,19 +1,14 @@
 package daon.be.agent.planner.model;
 
-import daon.be.agent.planner.model.response.AnalysisTarget;
-import daon.be.agent.planner.model.response.ScopeAssessment;
-
 import java.util.List;
 
 /**
  * Planner의 전체 출력 결과
  *
  *  <pre><code>
- *  {
- *   "scope": {
- *     "status": "SUPPORTED",
- *     "reason": null
- *   },
+ * {
+ *   "isSupported": false,
+ *   "unsupportedReason": false,
  *   "needsClarification": false,
  *   "clarificationQuestion": null,
  *    "analysisTargets": [
@@ -32,7 +27,8 @@ import java.util.List;
  * </code></pre>
  */
 public record AgentPlan(
-    ScopeAssessment scope,
+    boolean isSupported,
+    String unsupportedReason,
     boolean needsClarification,
     String clarificationQuestion,
     List<AnalysisTarget> analysisTargets

@@ -1,4 +1,4 @@
-package daon.be.agent.planner.model.response;
+package daon.be.agent.planner.model;
 
 import java.util.List;
 
