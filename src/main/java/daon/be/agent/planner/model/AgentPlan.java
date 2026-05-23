@@ -16,16 +16,17 @@ import java.util.List;
  *   },
  *   "needsClarification": false,
  *   "clarificationQuestion": null,
- *    "analysisTargets": {
+ *    "analysisTargets": [
+ *    {
  *      "stockRefs": ["삼성전자", "SK하이닉스"],
  *      "timeRef": "오늘",
  *      "reason": "하락 시점 전후 VI, 뉴스/공시 제목 후보를 확인해야 합니다.",
  *    },
- *    "analysisTargets": {
+ *    {
  *      "stockRefs": ["현대자동차"],
  *      "timeRef": "오늘",
  *      "reason": "하락 시점 전후 VI, 뉴스/공시 제목 후보를 확인해야 합니다.",
- *    },
+ *    }
  *   ]
  * }
  * </code></pre>
