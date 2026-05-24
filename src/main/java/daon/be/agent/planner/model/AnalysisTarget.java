@@ -17,6 +17,6 @@ import java.util.List;
 public record AnalysisTarget(
         List<String> stockRefs,
         String timeRef,
-        String objective
+        String objective    // target이 달성해야 하는 목표
 ) {
 }
