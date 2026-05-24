@@ -2,9 +2,15 @@ package daon.be.agent.service;
 
 import daon.be.agent.dto.AgentChatRequest;
 import daon.be.agent.dto.AgentChatResponse;
+import daon.be.agent.evidence.EvidencePacket;
+import daon.be.agent.evidence.EvidencePacketBuilder;
 import daon.be.agent.planner.AgentPlanner;
 import daon.be.agent.planner.model.AgentPlan;
 import daon.be.agent.planner.model.AgentPlanningRequest;
+import daon.be.agent.planner.model.AnalysisTarget;
+import daon.be.agent.tool.ToolExecutor;
+import daon.be.agent.tool.model.ToolExecutorContext;
+import daon.be.agent.tool.model.ToolResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -15,6 +21,7 @@ import org.springframework.ai.chat.client.ChatClient;
 //import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -25,6 +32,9 @@ public class AgentChatService {
 //    private final OpenAiChatModel chatModel;
     private final ChatClient chatClient;
     private final AgentPlanner agentPlanner;
+    private final ToolExecutor toolExecutor;
+    private final EvidencePacketBuilder evidencePacketBuilder;
+    private final AnswerGenerator answerGenerator;
 
     public AgentChatResponse chatWithoutPlanning(AgentChatRequest agentChatRequest) {
 
@@ -98,7 +108,30 @@ public class AgentChatService {
             return new AgentChatResponse(agentPlan.clarificationQuestion());
         }
 
-        return new AgentChatResponse(null);
+        List<ToolResult> toolResults = new ArrayList<>();
+
+        for (int i = 0; i < agentPlan.analysisTargets().size(); i++) {
+            AnalysisTarget target = agentPlan.analysisTargets().get(i);
+
+            ToolExecutorContext context = ToolExecutorContext.builder()
+                    .agentPlan(agentPlan)
+                    .analysisTarget(target)
+                    .analysisTargetIndex(i)
+                    .previousResults(toolResults)
+                    .instruction("주어진 analysisTarget의 objective를 달성하기 위해 필요한 tool을 호출하세요.")
+                    .iteration(0)
+                    .build();
+
+            toolResults.addAll(toolExecutor.execute(context));
+        }
+
+        EvidencePacket evidencePacket = evidencePacketBuilder.build(agentPlan, toolResults, 0);
+
+        log.info("evidencePacket: ", evidencePacket);
+
+        String chatResponseText = answerGenerator.generate(evidencePacket);
+
+        return new AgentChatResponse(chatResponseText);
     }
 
 }
