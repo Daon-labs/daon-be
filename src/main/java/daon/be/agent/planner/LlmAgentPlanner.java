@@ -31,6 +31,15 @@ public class LlmAgentPlanner implements AgentPlanner {
 
         // Request/Response in Structured Output
         AgentPlan agentPlan = chatClient.prompt()
+                .system("""
+                        당신은 주식 분석 요청을 실행 가능한 분석 목표로 분해하는 Planner입니다.
+                        
+                        역할:
+                        - 사용자의 질문을 이해하고, 답변에 필요한 분석 목표(analysisTargets)를 생성합니다.
+                        - 각 analysisTarget은 "어떤 종목에 대해, 어떤 시간 기준으로, 무엇을 확인해야 하는지"를 표현해야 합니다.
+                        - 실제 tool 선택이나 tool 호출은 절대 하지 않습니다.
+                        - tool 이름을 추측하거나 응답에 포함하지 않습니다.
+                        """)
                 .advisors(AdvisorParams.ENABLE_NATIVE_STRUCTURED_OUTPUT)
                 .user(userPrompt)
                 .call()
