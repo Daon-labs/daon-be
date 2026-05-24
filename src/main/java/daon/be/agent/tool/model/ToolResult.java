@@ -1,4 +1,4 @@
-가package daon.be.agent.tool.model;
+package daon.be.agent.tool.model;
 
 import java.util.Map;
 
