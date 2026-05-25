@@ -3,7 +3,6 @@ package daon.be.agent.service;
 import daon.be.agent.dto.AgentChatRequest;
 import daon.be.agent.dto.AgentChatResponse;
 import daon.be.agent.evidence.EvidencePacket;
-import daon.be.agent.evidence.EvidencePacketBuilder;
 import daon.be.agent.planner.AgentPlanner;
 import daon.be.agent.planner.model.AgentPlan;
 import daon.be.agent.planner.model.AgentPlanningRequest;
@@ -33,7 +32,6 @@ public class AgentChatService {
     private final ChatClient chatClient;
     private final AgentPlanner agentPlanner;
     private final ToolExecutor toolExecutor;
-    private final EvidencePacketBuilder evidencePacketBuilder;
     private final AnswerGenerator answerGenerator;
 
     public AgentChatResponse chatWithoutPlanning(AgentChatRequest agentChatRequest) {
@@ -110,6 +108,7 @@ public class AgentChatService {
 
         List<ToolResult> toolResults = new ArrayList<>();
 
+        // agentPlan 의 모든 analysisTargets 에 대해 각각 tool 실행
         for (int i = 0; i < agentPlan.analysisTargets().size(); i++) {
             AnalysisTarget target = agentPlan.analysisTargets().get(i);
 
@@ -118,14 +117,13 @@ public class AgentChatService {
                     .analysisTarget(target)
                     .analysisTargetIndex(i)
                     .previousResults(toolResults)
-                    .instruction("주어진 analysisTarget의 objective를 달성하기 위해 필요한 tool을 호출하세요.")
                     .iteration(0)
                     .build();
 
             toolResults.addAll(toolExecutor.execute(context));
         }
 
-        EvidencePacket evidencePacket = evidencePacketBuilder.build(agentPlan, toolResults, 0);
+        EvidencePacket evidencePacket = EvidencePacket.of(agentPlan, toolResults, 0);
 
         log.info("evidencePacket: {}", evidencePacket);
 

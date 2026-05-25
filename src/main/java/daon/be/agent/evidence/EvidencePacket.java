@@ -4,6 +4,7 @@ import daon.be.agent.planner.model.AgentPlan;
 import daon.be.agent.tool.model.ToolResult;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 public record EvidencePacket(
@@ -12,4 +13,16 @@ public record EvidencePacket(
         int iteration,
         OffsetDateTime createdAt
 ) {
+    public static EvidencePacket of(
+            AgentPlan agentPlan,
+            List<ToolResult> toolResults,
+            int iteration
+    ) {
+        return new EvidencePacket(
+                agentPlan,
+                toolResults,
+                iteration,
+                OffsetDateTime.now(ZoneId.of("Asia/Seoul"))
+        );
+    }
 }
