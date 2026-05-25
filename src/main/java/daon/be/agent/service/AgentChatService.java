@@ -96,7 +96,7 @@ public class AgentChatService {
         // Planner 호출
         AgentPlan agentPlan = agentPlanner.plan(planningRequest);
 
-        log.info("agentPlan:{}", agentPlan);
+        log.info("agentPlan: {}", agentPlan);
 
         // isSupported == false 라면 사용자에게 unsupportedReasons 반환
         if(!agentPlan.isSupported()){
@@ -127,7 +127,7 @@ public class AgentChatService {
 
         EvidencePacket evidencePacket = evidencePacketBuilder.build(agentPlan, toolResults, 0);
 
-        log.info("evidencePacket: ", evidencePacket);
+        log.info("evidencePacket: {}", evidencePacket);
 
         String chatResponseText = answerGenerator.generate(evidencePacket);
 
