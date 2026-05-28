@@ -47,7 +47,7 @@ public class SpringAiToolExecutor implements ToolExecutor {
         // 이전 분석 결과들을 하나의 텍스트로 취합
         String previousResultsContext = previousChatResponses.stream()
                 .map(ChatResponse ::response)
-                .collect(Collectors.joining("\\n\\n--- 이전 분석 결과 ---\\n\\n"));
+                .collect(Collectors.joining("\n\n--- 이전 분석 결과 ---\n\n"));
 
 
         // ChatClient 호출
