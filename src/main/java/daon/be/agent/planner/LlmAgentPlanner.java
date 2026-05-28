@@ -40,7 +40,6 @@ public class LlmAgentPlanner implements AgentPlanner {
                         - 실제 tool 선택이나 tool 호출은 절대 하지 않습니다.
                         - tool 이름을 추측하거나 응답에 포함하지 않습니다.
                         """)
-                .advisors(AdvisorParams.ENABLE_NATIVE_STRUCTURED_OUTPUT)
                 .user(userPrompt)
                 .call()
                 .entity(AgentPlan.class);
