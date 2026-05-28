@@ -2,19 +2,20 @@ package daon.be.agent.service;
 
 import daon.be.agent.dto.AgentChatRequest;
 import daon.be.agent.dto.AgentChatResponse;
+import daon.be.agent.evidence.EvidencePacket;
 import daon.be.agent.planner.AgentPlanner;
 import daon.be.agent.planner.model.AgentPlan;
 import daon.be.agent.planner.model.AgentPlanningRequest;
+import daon.be.agent.planner.model.AnalysisTarget;
+import daon.be.agent.tool.ToolExecutor;
+import daon.be.agent.tool.model.ToolExecutorContext;
+import daon.be.agent.tool.model.ChatResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-//import org.springframework.ai.chat.messages.SystemMessage;
-//import org.springframework.ai.chat.messages.UserMessage;
-//import org.springframework.ai.chat.model.ChatResponse;
-//import org.springframework.ai.chat.prompt.Prompt;
-//import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -22,25 +23,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AgentChatService {
 
-//    private final OpenAiChatModel chatModel;
     private final ChatClient chatClient;
     private final AgentPlanner agentPlanner;
+    private final ToolExecutor toolExecutor;
+    private final AnswerGenerator answerGenerator;
 
     public AgentChatResponse chatWithoutPlanning(AgentChatRequest agentChatRequest) {
-
-//        // Message
-//        SystemMessage systemMessage = new SystemMessage("""
-//                You are a helpful AI assistant.
-//                Always answer in Korean.
-//                """);
-//
-//        UserMessage userMessage = new UserMessage(agentChatRequest.message());
-//
-//        // Prompt
-//        Prompt prompt = new Prompt(List.of(systemMessage, userMessage));
-//
-//        // Request/Response
-//        ChatResponse chatResponse = chatModel.call(prompt);
 
         String chatResponseText = chatClient.prompt()
                 .system("You are a helpful AI assistant. Always answer in Korean.")
@@ -50,18 +38,6 @@ public class AgentChatService {
                 .getResult()
                 .getOutput()
                 .getText();
-
-//        String chatResponseText = null;
-//
-//        if (chatResponse != null
-//                && chatResponse.getResult() != null
-//                && chatResponse.getResult().getOutput() != null) {
-//            chatResponseText = chatResponse.getResult().getOutput().getText();
-//        }
-//        if (chatResponseText == null || chatResponseText.isBlank()) {
-//            throw new IllegalStateException("AI 응답 텍스트가 비어 있습니다.");
-//        }
-
 
         log.info("AI 응답: {}", chatResponseText);
 
@@ -86,8 +62,42 @@ public class AgentChatService {
         // Planner 호출
         AgentPlan agentPlan = agentPlanner.plan(planningRequest);
 
-        log.info("agentPlan:{}", agentPlan);
-        return new AgentChatResponse(null);
+        log.info("agentPlan: {}", agentPlan);
+
+        // isSupported == false 라면 사용자에게 unsupportedReasons 반환
+        if(!agentPlan.isSupported()){
+            return new AgentChatResponse(agentPlan.unsupportedReason());
+        }
+
+        // needsClarification == true 라면 사용자에게 clarificationQuestion 을 반환
+        if(agentPlan.needsClarification()){
+            return new AgentChatResponse(agentPlan.clarificationQuestion());
+        }
+
+        List<ChatResponse> chatResponses = new ArrayList<>();
+
+        // agentPlan 의 모든 analysisTargets 에 대해 각각 tool 실행
+        for (int i = 0; i < agentPlan.analysisTargets().size(); i++) {
+            AnalysisTarget target = agentPlan.analysisTargets().get(i);
+
+            ToolExecutorContext context = ToolExecutorContext.builder()
+                    .agentPlan(agentPlan)
+                    .analysisTarget(target)
+                    .analysisTargetIndex(i)
+                    .previousResults(chatResponses)
+                    .iteration(0)
+                    .build();
+
+            chatResponses.add(toolExecutor.execute(context));
+        }
+
+        EvidencePacket evidencePacket = EvidencePacket.of(agentPlan, chatResponses, 0);
+
+        log.info("evidencePacket: {}", evidencePacket);
+
+        String chatResponseText = answerGenerator.generate(evidencePacket);
+
+        return new AgentChatResponse(chatResponseText);
     }
 
 }
