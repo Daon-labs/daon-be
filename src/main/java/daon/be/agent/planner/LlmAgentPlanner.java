@@ -18,19 +18,9 @@ public class LlmAgentPlanner implements AgentPlanner {
     @Override
     public AgentPlan plan(AgentPlanningRequest request) {
 
-        String userPrompt = """
-                requestedAt: %s
-                request: %s
-                
-                requestedAt은 사용자가 질문한 시각입니다.
-                "오늘", "내일", "이번 주", "최근" 같은 상대적 시간 표현은 requestedAt을 기준으로 해석하세요.
-                """.formatted(
-                        request.requestedAt(),
-                        request.message()
-        );
-
         // Request/Response in Structured Output
         AgentPlan agentPlan = chatClient.prompt()
+                .advisors(AdvisorParams.ENABLE_NATIVE_STRUCTURED_OUTPUT)
                 .system("""
                         당신은 주식 분석 요청을 실행 가능한 분석 목표로 분해하는 Planner입니다.
                         
@@ -40,7 +30,16 @@ public class LlmAgentPlanner implements AgentPlanner {
                         - 실제 tool 선택이나 tool 호출은 절대 하지 않습니다.
                         - tool 이름을 추측하거나 응답에 포함하지 않습니다.
                         """)
-                .user(userPrompt)
+                .user(user -> user
+                        .text("""
+                                requestedAt은 사용자가 질문한 시각입니다.
+                                "오늘", "내일", "이번 주", "최근" 같은 상대적 시간 표현은 requestedAt을 기준으로 해석하세요.
+                                
+                                requestedAt: {requestedAt}
+                                request: {request}
+                                """)
+                        .param("requestedAt", String.valueOf(request.requestedAt()))
+                        .param("request", request.message()))
                 .call()
                 .entity(AgentPlan.class);
 
