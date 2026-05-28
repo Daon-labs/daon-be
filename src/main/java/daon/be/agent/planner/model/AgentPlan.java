@@ -8,7 +8,7 @@ import java.util.List;
  *  <pre><code>
  * {
  *   "isSupported": false,
- *   "unsupportedReason": false,
+ *   "unsupportedReason":  null,
  *   "needsClarification": false,
  *   "clarificationQuestion": null,
  *    "analysisTargets": [
