@@ -1,5 +1,7 @@
 package daon.be.agent.tool;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import daon.be.agent.planner.model.AgentPlan;
 import daon.be.agent.planner.model.AnalysisTarget;
 import daon.be.agent.tool.model.ToolExecutorContext;
@@ -10,6 +12,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 public class SpringAiToolExecutor implements ToolExecutor {
 
     private final ChatClient chatClient;
+    private final ObjectMapper objectMapper;
 
     @Override
     public ChatResponse execute(ToolExecutorContext context) {
@@ -28,16 +32,17 @@ public class SpringAiToolExecutor implements ToolExecutor {
         List<ChatResponse> previousChatResponses = context.previousResults();
 
         // 현재 분석해야 할 타겟 정보 추출
-        String currentTargetJson = String.format("""
-                        {
-                              "종목": "%s",
-                              "시점": "%s",
-                              "분석목표": "%s"
-                        }
-                        """,
-                target.stockRef(),
-                target.timeRef(),
-                target.objective());
+        String currentTargetJson;
+
+        try {
+            currentTargetJson = objectMapper.writeValueAsString(Map.of(
+                    "종목", target.stockRef(),
+                    "시점", target.timeRef(),
+                    "분석목표", target.objective()
+            ));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("현재 분석 타겟 직렬화에 실패했습니다.", e);
+        }
 
         // 이전 분석 결과들을 하나의 텍스트로 취합
         String previousResultsContext = previousChatResponses.stream()
