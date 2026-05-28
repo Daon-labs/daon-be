@@ -11,8 +11,7 @@ public record ToolExecutorContext(
         AgentPlan agentPlan,
         AnalysisTarget analysisTarget,
         int analysisTargetIndex,    // 추후 target id로 변경
-        List<ToolResult> previousResults,
-        String instruction,         // 해당 target 을 달성하기 위한 실행 지시
+        List<ChatResponse> previousResults,
         int iteration
 ) {
 }
