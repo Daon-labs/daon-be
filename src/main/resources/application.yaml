@@ -8,3 +8,8 @@ spring:
         options:
           model: gpt-5-nano  # GPT-5 models do not support temperature parameter
           temperature: 1 # temperature 미 설정 시 기본값 0.7 이 들어가면서 error 발생. 해당 모델은 temperature: 1 만 가능
+
+kis:
+  base-url: https://openapi.koreainvestment.com:9443 # 실전 도메인
+  appkey: ${KIS_APPKEY}
+  appsecret: ${KIS_APPSECRET}
