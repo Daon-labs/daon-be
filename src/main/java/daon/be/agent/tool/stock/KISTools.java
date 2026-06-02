@@ -13,6 +13,7 @@ import daon.be.agent.tool.stock.dto.ProgramTradingContextDto;
 import daon.be.agent.tool.stock.dto.ShortCreditLoanContextDto;
 import daon.be.agent.tool.stock.dto.ExpectationContextDto;
 import daon.be.agent.tool.stock.dto.AfterHoursContextDto;
+import daon.be.agent.tool.stock.dto.ScreenedStockCandidatesDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,7 @@ public class KISTools {
     private final KisShortCreditLoanContextService shortCreditLoanContextService;
     private final KisExpectationContextService expectationContextService;
     private final KisAfterHoursContextService afterHoursContextService;
+    private final KisScreenedStockCandidatesService screenedStockCandidatesService;
 
     @Tool(description = "국내주식 단일 종목의 현재가, 거래량, 당일 가격 범위, 호가 잔량, 거래 상태, 기본 밸류에이션 스냅샷을 조회합니다. KIS raw API명이나 원문 필드는 노출하지 않고 분석용 정규화 DTO를 반환합니다.")
     public StockNowContextDto getStockNowContext(String stockCode) {
@@ -98,5 +100,10 @@ public class KISTools {
     @Tool(description = "국내주식 시간외 단일가 거래량 순위, 시간외 등락률 순위, 장후 뉴스/공시 제목을 조회해 다음 거래일 관심 후보를 반환합니다. 시간외 가격은 얇은 거래량으로 왜곡될 수 있어 단독 근거로 사용하면 안 됩니다.")
     public AfterHoursContextDto getAfterHoursContext(String tradingDate, String market, String inputHour) {
         return afterHoursContextService.getAfterHoursContext(tradingDate, market, inputHour);
+    }
+
+    @Tool(description = "국내주식 재무비율 순위, 시장가치 순위, 시가총액 상위를 조합해 스크리닝 후보를 반환합니다. API 순위는 추천 확정이 아니라 후속 검증 대상 후보로만 사용해야 합니다.")
+    public ScreenedStockCandidatesDto getScreenedStockCandidates(String market) {
+        return screenedStockCandidatesService.getScreenedStockCandidates(market);
     }
 }
