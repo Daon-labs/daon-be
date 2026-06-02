@@ -6,6 +6,7 @@ import daon.be.agent.planner.model.AgentPlan;
 import daon.be.agent.planner.model.AnalysisTarget;
 import daon.be.agent.tool.model.ToolExecutorContext;
 import daon.be.agent.tool.model.ChatResponse;
+import daon.be.agent.tool.stock.KISTools;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -22,6 +23,7 @@ public class SpringAiToolExecutor implements ToolExecutor {
 
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
+    private final KISTools kisTools;
 
     @Override
     public ChatResponse execute(ToolExecutorContext context) {
@@ -81,6 +83,7 @@ public class SpringAiToolExecutor implements ToolExecutor {
                         .param("previousResults", prevResult)
                         .param("currentTarget", currentTargetJson)
                 )
+                .tools(kisTools)
                 .call()
                 .content();
 
@@ -91,4 +94,3 @@ public class SpringAiToolExecutor implements ToolExecutor {
         return chatResponse;
     }
 }
-
