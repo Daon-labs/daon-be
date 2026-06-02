@@ -11,6 +11,7 @@ import daon.be.agent.tool.stock.dto.CompareStocksContextDto;
 import daon.be.agent.tool.stock.dto.MarketMoverCandidatesDto;
 import daon.be.agent.tool.stock.dto.ProgramTradingContextDto;
 import daon.be.agent.tool.stock.dto.ShortCreditLoanContextDto;
+import daon.be.agent.tool.stock.dto.ExpectationContextDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,7 @@ public class KISTools {
     private final KisMarketMoverCandidatesService marketMoverCandidatesService;
     private final KisProgramTradingContextService programTradingContextService;
     private final KisShortCreditLoanContextService shortCreditLoanContextService;
+    private final KisExpectationContextService expectationContextService;
 
     @Tool(description = "국내주식 단일 종목의 현재가, 거래량, 당일 가격 범위, 호가 잔량, 거래 상태, 기본 밸류에이션 스냅샷을 조회합니다. KIS raw API명이나 원문 필드는 노출하지 않고 분석용 정규화 DTO를 반환합니다.")
     public StockNowContextDto getStockNowContext(String stockCode) {
@@ -84,5 +86,10 @@ public class KISTools {
     @Tool(description = "국내주식 단일 종목의 공매도 일별 추이, 신용잔고 일별 추이, 대차거래 일별 추이와 시장 공매도/신용잔고 상위 후보를 조회합니다. 공매도, 신용, 대차는 가격 방향의 확정 원인이 아니라 수급 리스크 후보로만 해석해야 합니다.")
     public ShortCreditLoanContextDto getShortCreditLoanContext(String stockCode, String startDate, String endDate, String market) {
         return shortCreditLoanContextService.getShortCreditLoanContext(stockCode, startDate, endDate, market);
+    }
+
+    @Tool(description = "국내주식 단일 종목의 증권사 투자의견·목표가 이력과 애널리스트 추정 실적·투자지표를 조회합니다. 투자의견과 추정실적은 가격 변동의 직접 원인이 아니라 장기 기대치 맥락으로만 해석해야 합니다.")
+    public ExpectationContextDto getExpectationContext(String stockCode, String startDate, String endDate, String market) {
+        return expectationContextService.getExpectationContext(stockCode, startDate, endDate, market);
     }
 }
