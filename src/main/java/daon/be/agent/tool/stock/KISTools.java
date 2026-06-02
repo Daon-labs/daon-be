@@ -9,6 +9,7 @@ import daon.be.agent.tool.stock.dto.SupplyDemandContextDto;
 import daon.be.agent.tool.stock.dto.FundamentalContextDto;
 import daon.be.agent.tool.stock.dto.CompareStocksContextDto;
 import daon.be.agent.tool.stock.dto.MarketMoverCandidatesDto;
+import daon.be.agent.tool.stock.dto.ProgramTradingContextDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,7 @@ public class KISTools {
     private final KisFundamentalContextService fundamentalContextService;
     private final KisCompareStocksContextService compareStocksContextService;
     private final KisMarketMoverCandidatesService marketMoverCandidatesService;
+    private final KisProgramTradingContextService programTradingContextService;
 
     @Tool(description = "국내주식 단일 종목의 현재가, 거래량, 당일 가격 범위, 호가 잔량, 거래 상태, 기본 밸류에이션 스냅샷을 조회합니다. KIS raw API명이나 원문 필드는 노출하지 않고 분석용 정규화 DTO를 반환합니다.")
     public StockNowContextDto getStockNowContext(String stockCode) {
@@ -70,5 +72,10 @@ public class KISTools {
     @Tool(description = "국내주식 시장에서 거래량, 등락률, 체결강도, 대량체결, HTS 조회상위, 신고/신저 근접, 상하한가 포착 순위에 나타난 이상 흐름 후보를 통합 조회합니다. 결과는 원인 확정이 아니라 상세 분석 대상 후보입니다.")
     public MarketMoverCandidatesDto getMarketMoverCandidates(String market) {
         return marketMoverCandidatesService.getMarketMoverCandidates(market);
+    }
+
+    @Tool(description = "국내주식 단일 종목과 시장 전체의 프로그램매매 체결/일별 흐름, 시장 프로그램매매 시간/일별 흐름, 투자자별 프로그램매매 당일 분해를 조회합니다. 프로그램매매는 수급 원인 후보로만 해석해야 합니다.")
+    public ProgramTradingContextDto getProgramTradingContext(String stockCode, String startDate, String endDate, String market, String inputHour) {
+        return programTradingContextService.getProgramTradingContext(stockCode, startDate, endDate, market, inputHour);
     }
 }
