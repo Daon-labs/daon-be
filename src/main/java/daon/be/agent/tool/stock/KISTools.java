@@ -7,6 +7,7 @@ import daon.be.agent.tool.stock.dto.MarketIndustryContextDto;
 import daon.be.agent.tool.stock.dto.PriceTrendContextDto;
 import daon.be.agent.tool.stock.dto.SupplyDemandContextDto;
 import daon.be.agent.tool.stock.dto.FundamentalContextDto;
+import daon.be.agent.tool.stock.dto.CompareStocksContextDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ public class KISTools {
     private final KisPriceTrendContextService priceTrendContextService;
     private final KisSupplyDemandContextService supplyDemandContextService;
     private final KisFundamentalContextService fundamentalContextService;
+    private final KisCompareStocksContextService compareStocksContextService;
 
     @Tool(description = "국내주식 단일 종목의 현재가, 거래량, 당일 가격 범위, 호가 잔량, 거래 상태, 기본 밸류에이션 스냅샷을 조회합니다. KIS raw API명이나 원문 필드는 노출하지 않고 분석용 정규화 DTO를 반환합니다.")
     public StockNowContextDto getStockNowContext(String stockCode) {
@@ -56,5 +58,10 @@ public class KISTools {
     @Tool(description = "국내주식 단일 종목의 종목 기본정보, 재무비율, 손익계산서, 대차대조표, 안정성비율을 조회합니다. 장기 투자 관점의 재무 체력과 데이터 품질 주의사항을 함께 반환합니다.")
     public FundamentalContextDto getFundamentalContext(String stockCode) {
         return fundamentalContextService.getFundamentalContext(stockCode);
+    }
+
+    @Tool(description = "국내주식 복수 종목을 동일 기준으로 비교합니다. focus는 PRICE, FUNDAMENTAL, SUPPLY_DEMAND, PRICE_FUNDAMENTAL, ALL 중 하나로 지정하며, 선택된 하위 도메인 툴만 fan-out 해 병합합니다.")
+    public CompareStocksContextDto getCompareStocksContext(String stockCodes, String startDate, String endDate, String focus) {
+        return compareStocksContextService.getCompareStocksContext(stockCodes, startDate, endDate, focus);
     }
 }
