@@ -14,6 +14,7 @@ import daon.be.agent.tool.stock.dto.ShortCreditLoanContextDto;
 import daon.be.agent.tool.stock.dto.ExpectationContextDto;
 import daon.be.agent.tool.stock.dto.AfterHoursContextDto;
 import daon.be.agent.tool.stock.dto.ScreenedStockCandidatesDto;
+import daon.be.agent.tool.stock.dto.WatchlistSnapshotDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,7 @@ public class KISTools {
     private final KisExpectationContextService expectationContextService;
     private final KisAfterHoursContextService afterHoursContextService;
     private final KisScreenedStockCandidatesService screenedStockCandidatesService;
+    private final KisWatchlistSnapshotService watchlistSnapshotService;
 
     @Tool(description = "국내주식 단일 종목의 현재가, 거래량, 당일 가격 범위, 호가 잔량, 거래 상태, 기본 밸류에이션 스냅샷을 조회합니다. KIS raw API명이나 원문 필드는 노출하지 않고 분석용 정규화 DTO를 반환합니다.")
     public StockNowContextDto getStockNowContext(String stockCode) {
@@ -105,5 +107,10 @@ public class KISTools {
     @Tool(description = "국내주식 재무비율 순위, 시장가치 순위, 시가총액 상위를 조합해 스크리닝 후보를 반환합니다. API 순위는 추천 확정이 아니라 후속 검증 대상 후보로만 사용해야 합니다.")
     public ScreenedStockCandidatesDto getScreenedStockCandidates(String market) {
         return screenedStockCandidatesService.getScreenedStockCandidates(market);
+    }
+
+    @Tool(description = "요청으로 전달한 국내주식 관심종목 목록을 멀티시세로 빠르게 조회하고, 거래량/등락률 순위에 함께 포착된 종목을 관심 알림 후보로 반환합니다. 초기 구현은 DB 관심그룹이 아니라 stockCodes 파라미터를 사용합니다.")
+    public WatchlistSnapshotDto getWatchlistSnapshot(String watchlistId, String stockCodes, String market) {
+        return watchlistSnapshotService.getWatchlistSnapshot(watchlistId, stockCodes, market);
     }
 }
