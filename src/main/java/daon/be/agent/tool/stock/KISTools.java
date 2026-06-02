@@ -6,6 +6,7 @@ import daon.be.agent.tool.stock.dto.EventTimelineContextDto;
 import daon.be.agent.tool.stock.dto.MarketIndustryContextDto;
 import daon.be.agent.tool.stock.dto.PriceTrendContextDto;
 import daon.be.agent.tool.stock.dto.SupplyDemandContextDto;
+import daon.be.agent.tool.stock.dto.FundamentalContextDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ public class KISTools {
     private final KisMarketIndustryContextService marketIndustryContextService;
     private final KisPriceTrendContextService priceTrendContextService;
     private final KisSupplyDemandContextService supplyDemandContextService;
+    private final KisFundamentalContextService fundamentalContextService;
 
     @Tool(description = "국내주식 단일 종목의 현재가, 거래량, 당일 가격 범위, 호가 잔량, 거래 상태, 기본 밸류에이션 스냅샷을 조회합니다. KIS raw API명이나 원문 필드는 노출하지 않고 분석용 정규화 DTO를 반환합니다.")
     public StockNowContextDto getStockNowContext(String stockCode) {
@@ -49,5 +51,10 @@ public class KISTools {
     @Tool(description = "국내주식 단일 종목의 종목별 일별 확정 수급, 장중 외인기관 가집계, 국내기관/외국인 매매종목 가집계, 시장별 투자자 일별 수급을 조회합니다. 추정 수급과 확정 수급은 분리해서 해석해야 합니다.")
     public SupplyDemandContextDto getSupplyDemandContext(String stockCode, String startDate, String marketIndexCode) {
         return supplyDemandContextService.getSupplyDemandContext(stockCode, startDate, marketIndexCode);
+    }
+
+    @Tool(description = "국내주식 단일 종목의 종목 기본정보, 재무비율, 손익계산서, 대차대조표, 안정성비율을 조회합니다. 장기 투자 관점의 재무 체력과 데이터 품질 주의사항을 함께 반환합니다.")
+    public FundamentalContextDto getFundamentalContext(String stockCode) {
+        return fundamentalContextService.getFundamentalContext(stockCode);
     }
 }
